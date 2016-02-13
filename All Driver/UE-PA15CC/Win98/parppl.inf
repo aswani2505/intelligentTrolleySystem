@@ -1,0 +1,60 @@
+;  
+;  This file is the Parallel port visual driver of USB to Parallel port
+;  Driver Name : PARPPL.vxd
+;  Inf    Name : parppl.inf
+;  Copyright (c) Prolific Technology Inc., 2000
+;
+
+[version]
+signature="$CHICAGO$"
+Class=Ports
+ClassGUID={4d36e978-e325-11ce-bfc1-08002be10318}
+Provider=%Vendor%
+
+[DestinationDirs]
+DefaultDestDir = 11       
+
+; Install class "Ports"
+;----------------------------------------------------------
+[ClassInstall]
+AddReg=PortsClass.AddReg
+
+[PortsClass.AddReg]
+HKR,,,,%PortsClassName%
+HKR,,Icon,,-23
+
+; Drivers
+;----------------------------------------------------------
+[Manufacturer]
+%Prolific%=Prolific
+
+[Prolific]
+%*ProlificPort.DeviceDesc%=USB2ParPort,*PROLIFICPORT
+
+; USB2ParPort sections		
+;----------------------------------------------------------
+[USB2ParPort]
+AddReg=USB2ParPort.AddReg
+
+[USB2ParPort.AddReg]
+HKR,,DevLoader,,*vcomm
+HKR,,PortDriver,,ParPpl.vxd
+HKR,,PortSubClass,1,00
+HKR,,ECPDevice,1,01
+HKR,,USBDriver,,ParUpl.sys
+
+[*ProlificPort.det]
+AddReg=USB2ParPorts.AddReg
+
+[USB2ParPorts.AddReg]
+HKR,,NoSetupUI,,1
+
+; User readable strings
+;----------------------------------------------------------
+[Strings]
+Vendor = "Prolific"
+Std = "(Standard Commumication Ports)"
+PortsClassName = "Communication Ports (COM & LPT)"
+Prolific = "Prolific"
+*ProlificPort.DeviceDesc = "USB to Parallel Port"
+DISK1 = "USB to Parallel Port Installation Disk"

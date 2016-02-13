@@ -1,0 +1,534 @@
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 1   
+
+
+C51 COMPILER V8.06, COMPILATION OF MODULE SMART_TROLLEY_SYSTEM
+OBJECT MODULE PLACED IN smart trolley system.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE smart trolley system.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          
+   2          #include<pins.h>
+   3          #include<lcd.h>
+   4          //#include<rfid.h>
+   5          #include<serial.h>
+   6          #include<string.h>
+   7          
+   8          
+   9          
+  10          
+  11          #define BAUDRATE 9600
+  12          #define to_ascii(x)      ((x&0x0F)|0x30)
+  13          
+  14          #define RFID 1 
+  15          #define ZIGBEE 2
+  16          
+  17          
+  18          
+  19          
+  20          unsigned char code  tag1[] = "55000DE0E058";  // Dairy Milk Silk
+  21          unsigned char code  tag2[] = "55000DD0D25A";
+  22          unsigned char code  tag3[] = "55000DC7B02F";
+  23          unsigned char code  tag4[] = "55000D577A75";
+  24          unsigned char code  tag5[] = "55000D8A0FDD";
+  25          unsigned char code  tag6[] = "55000D6D5E6B";
+  26          unsigned char code  tag7[] = "55000DAE19EF";
+  27          unsigned char code  tag8[] = "55000DB645AB";
+  28          unsigned char code  tag9[] = "55000C80875E";
+  29          unsigned char code tag10[] = "15001BFA6195";
+  30          unsigned char code tag11[] = "121212121211";
+  31          unsigned char code tag12[] = "121212121221";
+  32          
+  33          
+  34          //unsigned char code  item1[] = "     item 1     ";
+  35          //unsigned char code  item2[] = "     item 2     ";
+  36          //unsigned char code  item3[] = "     item 3     ";
+  37          //unsigned char code  item4[] = "     item 4     ";
+  38          //unsigned char code  item5[] = "     item 5     ";
+  39          //unsigned char code  item6[] = "     item 6     ";
+  40          //unsigned char code  item7[] = "     item 7     ";
+  41          //unsigned char code  item8[] = "     item 8     ";
+  42          //unsigned char code  item9[] = "     item 9     ";
+  43          //unsigned char code item10[] = "     item 10    ";
+  44          //unsigned char code item11[] = "     item 11    ";
+  45          //unsigned char code item12[] = "     item 12    ";
+  46          
+  47          unsigned char code  *item[] = 
+  48          {
+  49           "                ",
+  50           "TATA SALT 1kg ",
+  51           "BISCUIT OREO",
+  52           "DAIRYMILK SILK",
+  53           "MAGGI 100gms",
+  54           "SURF EXCEL MATIC",
+  55           "KISSAN KETCHUP",
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 2   
+
+  56           "COLGATE TOTAL",
+  57           "KURKURE",
+  58           " OLD SPICE DEO",
+  59           "     item 10    ",
+  60           "     item 11    ",
+  61           "     item 12    "
+  62          };
+  63          
+  64          
+  65          unsigned int cost[] = { 0, 18, 12 , 100 , 10 , 340 , 120 , 95 , 150 , 350 , 63 };
+  66          
+  67          
+  68          unsigned char code press_but[] = "Press ADD/REMOVE";
+  69          
+  70          
+  71          
+  72          
+  73          unsigned char store_zigbee[6], store_rfid[15];
+  74          unsigned char data_in , t ;
+  75          bit start_zigbee_f = 0 , all_zigbee_rec = 0, all_rfid_rec = 0;
+  76          
+  77          unsigned char count_1, count_2 = 0;
+  78          unsigned char act , msec;
+  79          unsigned int balance = 0;
+  80          bit card_1_f = 0 ,card_2_f = 0 ,card_3_f = 0 ,card_4_f = 0 , total_f = 0;
+  81          
+  82          unsigned char idata tmit[35];
+  83          
+  84          
+  85          void msdelay(unsigned int itime)
+  86           {
+  87   1        unsigned int i,j;
+  88   1        for(i=0;i<itime;i++)
+  89   1        for(j=0;j<1275;j++);
+  90   1       }
+  91          
+  92          
+  93          
+  94          
+  95          
+  96          void update_lcd(unsigned char dis)
+  97          {
+  98   1       lcd(item[dis] , LINE1);
+  99   1       lcd( "                ", LINE2);
+ 100   1      
+ 101   1       lcd("    Rs: ", LINE2);
+ 102   1       lcd_putUINT16(cost[dis]);
+ 103   1      // balance = balance + cost[dis];
+ 104   1      // lcdcmd(0xC8);
+ 105   1      // lcd_putUINT16(balance);
+ 106   1      
+ 107   1      }
+ 108          
+ 109          
+ 110          unsigned char item_true[12] = 0;
+ 111          
+ 112          void take_action(unsigned char dat)
+ 113          {
+ 114   1       if(dat>=1 && dat<=10)  // rfid 
+ 115   1       {
+ 116   2      
+ 117   2        if(item_true[dat]==0)
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 3   
+
+ 118   2        {
+ 119   3         update_lcd(dat);
+ 120   3         balance = balance + cost[dat];
+ 121   3         item_true[dat] = 1;
+ 122   3        }
+ 123   2      
+ 124   2        else
+ 125   2        {
+ 126   3         lcd(press_but, LINE1);
+ 127   3         lcd(item[dat], LINE2);
+ 128   3         while(add==1 && remove==1);
+ 129   3         msdelay(5);
+ 130   3         while(add==1 && remove==1 );
+ 131   3      
+ 132   3         if(add==0)
+ 133   3         {
+ 134   4                 update_lcd(dat);     item_true[dat]=1;
+ 135   4         }
+ 136   3         else 
+ 137   3         {
+ 138   4               if(balance>0)   balance = balance - cost[dat]; item_true[dat]=0;
+ 139   4          lcd(item[dat] , LINE1);
+ 140   4          lcd( "     Removed    ", LINE2);
+ 141   4      
+ 142   4         }
+ 143   3        }
+ 144   2      
+ 145   2      
+ 146   2      
+ 147   2      
+ 148   2        
+ 149   2       }
+ 150   1      
+ 151   1      
+ 152   1      }
+ 153          
+ 154          
+ 155          unsigned char check_command()
+ 156          {
+ 157   1      
+ 158   1      ///***************** CHECK ZIGBEE COMMAND ****************************///
+ 159   1       unsigned char result;
+ 160   1        result = 10;
+ 161   1      
+ 162   1        result = strcmp(store_zigbee,"@T2#");
+ 163   1        if(result==0)  { return(1);  }
+ 164   1      
+ 165   1        result = strcmp(store_zigbee,"@F2#");
+ 166   1        if(result==0)  { return(2);  }
+ 167   1        return(0);
+ 168   1      }
+ 169          
+ 170          
+ 171          
+ 172          
+ 173          unsigned char check_data()
+ 174          {
+ 175   1      
+ 176   1      ///***************** CHECK RFID DATA ****************************///
+ 177   1       unsigned char result;
+ 178   1        result = 10;
+ 179   1      
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 4   
+
+ 180   1        result = strcmp(store_rfid,tag1);
+ 181   1        if(result==0)  { return(1);  }
+ 182   1      
+ 183   1        result = strcmp(store_rfid,tag2);
+ 184   1        if(result==0)  { return(2);  }
+ 185   1      
+ 186   1        result = strcmp(store_rfid,tag3);
+ 187   1        if(result==0)  { return(3);  }
+ 188   1      
+ 189   1        result = strcmp(store_rfid,tag4);
+ 190   1        if(result==0)  { return(4);  }
+ 191   1      
+ 192   1        result = strcmp(store_rfid,tag5);
+ 193   1        if(result==0)  { return(5);  }
+ 194   1      
+ 195   1        result = strcmp(store_rfid,tag6);
+ 196   1        if(result==0)  { return(6);  }
+ 197   1      
+ 198   1        result = strcmp(store_rfid,tag7);
+ 199   1        if(result==0)  { return(7);  }
+ 200   1      
+ 201   1        result = strcmp(store_rfid,tag8);
+ 202   1        if(result==0)  { return(8);  }
+ 203   1      
+ 204   1        result = strcmp(store_rfid,tag9);
+ 205   1        if(result==0)  { return(9);  }
+ 206   1      
+ 207   1        result = strcmp(store_rfid,tag10);
+ 208   1        if(result==0)  { return(10);  }
+ 209   1       return(0);
+ 210   1      //  result = strcmp(store_rfid,tag11);
+ 211   1      //  if(result==0)  { return(11);  }
+ 212   1      //
+ 213   1      //  result = strcmp(store_rfid,tag12);
+ 214   1      //  if(result==0)  { return(12);  }
+ 215   1       
+ 216   1      
+ 217   1      ///***************** CHECK ZIGBEE COMMANDS ****************************///
+ 218   1      
+ 219   1      
+ 220   1      
+ 221   1      }  // end of take action routine
+ 222          
+ 223          
+ 224          
+ 225          void timer_0() interrupt 1
+ 226          {
+ 227   1       msec++;
+ 228   1       TF0 = 0; 
+ 229   1      
+ 230   1       if(msec>=40)
+ 231   1       {
+ 232   2        msec = 0;
+ 233   2       total_f = 1;
+ 234   2       TR0 = 0;
+ 235   2       }
+ 236   1      
+ 237   1       else
+ 238   1       {
+ 239   2        total_f = 0;
+ 240   2        TH0 = 0x4B ;
+ 241   2        TL0 = 0xFD; 
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 5   
+
+ 242   2        TR0 = 1;
+ 243   2       }
+ 244   1      
+ 245   1      }
+ 246          
+ 247          
+ 248          
+ 249          void transmit_bill()
+ 250          {
+ 251   1      unsigned char ptr = 0;//ES = 0;
+ 252   1      msdelay(1);
+ 253   1      ptr = 0;
+ 254   1      tmit[ptr++] = '@';
+ 255   1      // Serial_Wr('0');
+ 256   1      // Serial_Wr('0');
+ 257   1      // Serial_Wr('2');
+ 258   1      // Serial_Wr(':');
+ 259   1       if(item_true[1]==1)  {  tmit[ptr++] = '1'; tmit[ptr++] = ',';} 
+ 260   1       if(item_true[2]==1)  {  tmit[ptr++] = '2'; tmit[ptr++] = ',';} 
+ 261   1       if(item_true[3]==1)  {  tmit[ptr++] = '3'; tmit[ptr++] = ',';} 
+ 262   1       if(item_true[4]==1)  {  tmit[ptr++] = '4'; tmit[ptr++] = ',';} 
+ 263   1       if(item_true[5]==1)  {  tmit[ptr++] = '5'; tmit[ptr++] = ',';} 
+ 264   1       if(item_true[6]==1)  {  tmit[ptr++] = '6'; tmit[ptr++] = ',';} 
+ 265   1       if(item_true[7]==1)  {  tmit[ptr++] = '7'; tmit[ptr++] = ',';} 
+ 266   1       if(item_true[8]==1)  {  tmit[ptr++] = '8'; tmit[ptr++] = ',';} 
+ 267   1       if(item_true[9]==1)  {  tmit[ptr++] = '9'; tmit[ptr++] = ',';} 
+ 268   1       if(item_true[10]==1) {  tmit[ptr++] = 'A'; tmit[ptr++] = ',';}
+ 269   1      
+ 270   1       tmit[--ptr] = '#';
+ 271   1       tmit[++ptr] = '\0';
+ 272   1      
+ 273   1        Serial_puts(tmit);
+ 274   1      // Serial_Wr('#');
+ 275   1      // Serial_Wr('#');
+ 276   1      
+ 277   1      // Serial_puts("\r\n");
+ 278   1      
+ 279   1      }
+ 280          
+ 281          
+ 282          
+ 283          
+ 284          
+ 285          
+ 286          
+ 287          //
+ 288          //void transmit_bill()
+ 289          //{
+ 290          //ES = 0;
+ 291          //msdelay(2);
+ 292          //Serial_puts("@1,2,3,4,7,8,9#");
+ 293          //
+ 294          //}
+ 295          
+ 296          
+ 297          
+ 298          
+ 299          
+ 300          
+ 301          
+ 302          void main()
+ 303          {
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 6   
+
+ 304   1       add = 1;        // input key
+ 305   1       remove = 1; // input key
+ 306   1       msec = 0;
+ 307   1       buzzer = 0;
+ 308   1       Serial_Init();
+ 309   1      
+ 310   1       
+ 311   1       msdelay(10);
+ 312   1      
+ 313   1       lcd_init();
+ 314   1       lcd( " SMART TROLLEY  ", LINE1);
+ 315   1       lcd( "     SYSTEM     ", LINE2);
+ 316   1      
+ 317   1       msdelay(200);
+ 318   1      
+ 319   1       lcd( "  INITIALIZING  ", LINE1);
+ 320   1       lcd( "     ZIGBEE     ", LINE2);
+ 321   1       
+ 322   1       msdelay(600);
+ 323   1      
+ 324   1      
+ 325   1       lcd( "TROLLEY No: 002 ", LINE1);
+ 326   1       lcd( "                ", LINE2);
+ 327   1      
+ 328   1      // msdelay(300);         // ignore zigbees startup messages
+ 329   1       TMOD = TMOD|0x01;
+ 330   1       TH0 = 0x4B ;
+ 331   1       TL0 = 0xFD; 
+ 332   1      // TR0 = 1;
+ 333   1      
+ 334   1      //// 50 msec = 46082 or B402 ... count  4BFD  multiplier 40 for 2 SECs
+ 335   1      
+ 336   1      
+ 337   1       RI = 0;
+ 338   1       EA = 1; // enable interrupts
+ 339   1       ET0 = 1;
+ 340   1      
+ 341   1       RI = 0;
+ 342   1       ES = 1; // serial interrupt enable
+ 343   1      
+ 344   1       start_led = 1;
+ 345   1      
+ 346   1       while(1)
+ 347   1       {
+ 348   2        
+ 349   2        if(all_rfid_rec==1)
+ 350   2        {
+ 351   3         all_rfid_rec = 0;  // reusing variable
+ 352   3         ES = 0;
+ 353   3         act = check_data();
+ 354   3      
+ 355   3         take_action(act);
+ 356   3         
+ 357   3         TF0 = 1;
+ 358   3         count_1 = 0;   count_2 = 0;
+ 359   3              RI = 0;
+ 360   3           ES = 1;
+ 361   3        }
+ 362   2      
+ 363   2         if(total_f==1)
+ 364   2         {
+ 365   3      //      ES = 0;
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 7   
+
+ 366   3              lcd( "                ", LINE1);
+ 367   3              lcd( "                ", LINE2);
+ 368   3      //      ES = 1;
+ 369   3              lcd("   TOTAL: ", LINE2);
+ 370   3              lcdcmd(0xC9);
+ 371   3          lcd_putUINT16(balance);
+ 372   3              total_f = 0;
+ 373   3      //      RI = 0;
+ 374   3       //     ES = 1;
+ 375   3         }
+ 376   2      
+ 377   2        if(all_zigbee_rec==1)
+ 378   2        {
+ 379   3         ES = 0;
+ 380   3      
+ 381   3              all_zigbee_rec = 0;
+ 382   3              act = check_command();
+ 383   3              /// to be cont...  take action
+ 384   3              if(act==1)      // transfer total bill
+ 385   3              {
+ 386   4                       lcd( "                ", LINE1);
+ 387   4                   lcd( "                ", LINE2);
+ 388   4                       lcd( "  SENDING BILL  ", LINE1); 
+ 389   4                        
+ 390   4                       //msdelay(70);
+ 391   4               
+ 392   4                       for(t=0;t<5;t++)
+ 393   4                       {
+ 394   5                        buzzer = 1;
+ 395   5                        transmit_bill();
+ 396   5                        msdelay(30);
+ 397   5                        buzzer = 0;
+ 398   5                        msdelay(30);
+ 399   5                       }
+ 400   4                       msdelay(100);
+ 401   4      
+ 402   4                       lcd( "    BILL SENT   ", LINE1);
+ 403   4      
+ 404   4              }
+ 405   3      
+ 406   3              else if(act==2) // flush bill 
+ 407   3              {
+ 408   4                       balance = 0;
+ 409   4                       for(t=0;t<12;t++)
+ 410   4                       {
+ 411   5                        item_true[t] = 0;
+ 412   5                       }
+ 413   4              
+ 414   4                       lcd( "                ", LINE1);
+ 415   4                   lcd( "                ", LINE2);
+ 416   4                       lcd( "    THANK YOU   ", LINE1);
+ 417   4                       buzzer = 1;
+ 418   4                       
+ 419   4                       msdelay(200);
+ 420   4                        buzzer = 0; 
+ 421   4                       lcd( "   VISIT AGAIN  ", LINE1);
+ 422   4                       msdelay(200); 
+ 423   4                       lcd( "TROLLEY No: 002 ", LINE1);
+ 424   4               lcd( "                ", LINE2);
+ 425   4      
+ 426   4              }
+ 427   3         count_1 = 0;   count_2 = 0;
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 8   
+
+ 428   3         RI = 0;
+ 429   3         ES = 1;
+ 430   3        }
+ 431   2       
+ 432   2      
+ 433   2       }
+ 434   1      
+ 435   1      }
+ 436          
+ 437          
+ 438          
+ 439          void serial_isr() interrupt 4
+ 440          {
+ 441   1       if(RI)
+ 442   1       {
+ 443   2        RI = 0;        
+ 444   2        data_in = SBUF;
+ 445   2        if(data_in=='\r'||data_in=='\n')
+ 446   2        {
+ 447   3        
+ 448   3        }     // do nothing
+ 449   2        else 
+ 450   2        {
+ 451   3         if(data_in=='@')
+ 452   3         {
+ 453   4              start_zigbee_f = 1;
+ 454   4              count_1 = 0;
+ 455   4         }
+ 456   3      
+ 457   3         if(start_zigbee_f==1)
+ 458   3         {
+ 459   4              store_zigbee[count_1++] = data_in;
+ 460   4         }
+ 461   3      
+ 462   3         if(data_in=='#')
+ 463   3         {
+ 464   4              start_zigbee_f = 0;
+ 465   4              store_zigbee[count_1++] = '\0';  // null char for strcmp
+ 466   4              count_1 = 0;
+ 467   4              all_zigbee_rec = 1;
+ 468   4         }
+ 469   3      
+ 470   3         if(start_zigbee_f==0&&data_in!='#')
+ 471   3         {
+ 472   4              if(count_2<=11)
+ 473   4              {
+ 474   5               store_rfid[count_2++] = data_in;
+ 475   5              }
+ 476   4              if(count_2==12)
+ 477   4              {
+ 478   5               store_rfid[count_2++]  = '\0';  // null char for strcmp
+ 479   5               count_2 = 0;
+ 480   5               all_rfid_rec = 1;
+ 481   5      
+ 482   5              }
+ 483   4         
+ 484   4         }
+ 485   3        
+ 486   3        }
+ 487   2      
+ 488   2       
+ 489   2       }
+C51 COMPILER V8.06   SMART_TROLLEY_SYSTEM                                                  02/14/2015 20:07:45 PAGE 9   
+
+ 490   1      
+ 491   1       else 
+ 492   1       TI = 0;
+ 493   1      
+ 494   1      
+ 495   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2127    ----
+   CONSTANT SIZE    =    566    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     94      15
+   IDATA SIZE       =     35    ----
+   BIT SIZE         =      8    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

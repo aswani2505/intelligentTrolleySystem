@@ -1,0 +1,178 @@
+;*******************************************************************************
+; INF for Windows 98 and Windows 2000
+
+
+[Version]
+Signature  = "$CHICAGO$"
+Compatible = 1
+Class      = Net
+ClassGUID  = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider   = %DAVICOM%
+;LayoutFile = layout.inf
+CatalogFile = dm9usb.cat
+DriverVer   = 03/19/2002, 1.60.0319.2002
+
+[Manufacturer]
+%DAVICOM%   = DM9USB
+
+[ControlFlags]
+ExcludeFromSelect = USB\VID_07a8&PID_8515
+
+[DM9USB]
+%DM9USB.DeviceDesc% = DM9USB.Ndi,USB\VID_07a8&PID_8515
+
+
+;*******************************************************************************
+; Win98 main sections
+
+[DM9USB.Ndi]
+AddReg   = DM9USB.Reg, DM9USB.Params
+;DeviceID = USB\VID_07a8&PID_8515
+CopyFiles = DM9USB.ndis.copyfiles
+
+;*******************************************************************************
+; NT main sections
+
+[DM9USB.Ndi.NT]
+AddReg          = DM9USB.NT.Reg, DM9USB.Params
+Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 1 ; ISA for pass InfCheck.exe
+;The BusType for usb devices is 15 ?????
+CopyFiles       = DM9USB.ndis.copyfiles.NT
+
+
+[DM9USB.Ndi.NT.Services]
+AddService = DM9USB, 2, DM9USB.Service, Common.EventLog
+
+
+[DM9USB.ndis.copyfiles]
+dm9usb.sys,,,2
+
+[DM9USB.ndis.copyfiles.NT]
+dm9usb.sys,,,2
+
+
+;*******************************************************************************
+; Windows 98 section
+;*******************************************************************************
+
+[DM9USB.Reg]
+HKR,Ndi,DeviceID,,USB\VID_07a8&PID_8515
+HKR,,AdapterName,,DM9USB
+HKR,Ndi,CardType,,"PNP"
+
+HKR,,DevLoader,,*ndis,*ntkern,*ndis
+HKR,,DeviceVxDs,,dm9usb.sys
+
+; NDIS Info
+HKR,NDIS,MajorNdisVersion,1,05
+HKR,NDIS,MinorNdisVersion,1,00
+HKR,NDIS,LogDriverName,,DM9USB
+
+; Interfaces
+HKR,Ndi\Interfaces,DefUpper,,"ndis3"
+HKR,Ndi\Interfaces,DefLower,,"ethernet"
+HKR,Ndi\Interfaces,UpperRange,,"ndis3"
+HKR,Ndi\Interfaces,LowerRange,,"ethernet"
+
+; Install sections
+HKR,Ndi\Install,,,"DM9USB.Install"
+
+HKR,Ndi,HelpText,,"DM9601 USB To Fast Ethernet Adapter"
+
+
+;*******************************************************************************
+; Driver parameters
+;*******************************************************************************
+
+[DM9USB.Params]
+;HKR, ,TxPacketDesc,    0, "40"   ; 0x28
+;HKR, ,RxPacketDesc,    0, "40"   ; 0x14
+
+HKR, ,TxPacketDesc,    0, "46"   ; 0x2E
+;HKR, ,RxPacketDesc,    0, "46"   ; 0x2E
+HKR, ,RxPacketDesc,    0, "1"   ; 0x01
+
+
+
+HKR,Ndi\Params\ConnectionType,ParamDesc,,"ConnectionType"
+HKR,Ndi\Params\ConnectionType,default,,"5"
+HKR,Ndi\Params\ConnectionType,type,,"enum"
+HKR,Ndi\Params\ConnectionType\enum,15,,"AutoSense"
+HKR,Ndi\Params\ConnectionType\enum,2,,"1M PHNA"
+HKR,Ndi\Params\ConnectionType\enum,4,,"10BaseT"
+HKR,Ndi\Params\ConnectionType\enum,5,,"10BaseT Full_Duplex"
+HKR,Ndi\Params\ConnectionType\enum,8,,"100BaseTX"
+HKR,Ndi\Params\ConnectionType\enum,9,,"100BaseTX Full_Duplex"
+HKR,Ndi\Params\ConnectionType,flag,1,"20","00","00","00"
+
+
+
+;*******************************************************************************
+; Install section for Windows 2000
+;*******************************************************************************
+
+[DM9USB.NT.Reg]
+; Interfaces
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi,            Service,    0, "DM9USB"
+HKR,,                Platform,   0, "1"
+
+
+[DM9USB.Service]
+DisplayName    = %DM9USB.Service.DispName%
+ServiceType    = 1
+StartType      = 3
+ErrorControl   = 1
+ServiceBinary  = %12%\dm9usb.sys
+LoadOrderGroup = NDIS,NTKERN,NDIS
+AddReg         = TextModeFlags.Reg
+
+
+[Common.EventLog]
+AddReg = Common.AddEventLog.Reg
+
+[Common.AddEventLog.Reg]
+HKR, , EventMessageFile, 0x00020000, %%SystemRoot%%\System32\netevent.dll
+HKR, , TypesSupported  , 0x00010001, 7
+
+[TextModeFlags.Reg]
+HKR, , TextModeFlags, 0x00010001, 0x0001
+
+
+;*******************************************************************************
+; Destination directories
+;*******************************************************************************
+
+[DestinationDirs]
+DM9USB.ndis.copyfiles    = 11
+DM9USB.ndis.copyfiles.NT = 12
+DefaultDestDir           = 11
+
+
+[SourceDisksNames]
+; Cabinet file names and associated disks
+; <cab#> = <disk#>,<cabinet filename>, ID (Unused, must be 0)
+1=%DISKNAME%,,,
+
+[SourceDisksFiles]
+;<file> = <cabinet number>,<subdir>,<filename>,<size>
+;Note: File is not in a cabinet if cab# is 0
+dm9usb.sys = 1
+dm9usb.inf = 1
+dm9usb.cat = 1
+
+
+;*******************************************************************************
+; Localizable strings
+;*******************************************************************************
+
+[Strings]
+DAVICOM = "ADMtek Incorporated"
+
+;Source Disk Name
+DISKNAME = "ADM851X USB To Fast Ethernet Adapter Driver Disk"
+
+DM9USB.DeviceDesc       = "ADM851X USB To Fast Ethernet Adapter"
+DM9USB.Service.DispName = "ADM851X USB To Fast Ethernet Adapter"

@@ -1,0 +1,107 @@
+;	File:        USBBC.INF
+;	Revision:    Rev. 1.00
+;       Date:        2000.7.18
+;	OS:	     Windows 98, Windows 2000
+;	Copyright (c) 1998-2001 Prolific Technology Inc.
+
+[Version]
+Signature="$Chicago$"
+Class=USB
+ClassGuid = {36fc9e60-c465-11cf-8056-444553540000}
+Provider=%Mfg%
+DriverVer=10/22/2001,1.6.0.0
+catalogfile=pl-2301.cat
+
+[Manufacturer]
+%Mfg% = Pro
+
+[Pro]
+%Wdm1%=Wdm1.Install, USB\VID_067B&PID_0000
+
+[ControlFlags]
+ExcludeFromSelect=USB\VID_067B&PID_0000
+
+[DestinationDirs]
+DefaultDestDir=10,System32\Drivers
+Wdm1.Files.Driver=10,System32\Drivers
+Wdm1.Files.Driver.NTx86=10,System32\Drivers
+CoInstaller_CopyFiles=11		;System Dir(system32 on NT)
+App_CopyFiles=10,Temp
+
+[SourceDisksNames]
+1=%PCLINQ_DISKNAME%,,,
+
+[SourceDisksFiles]
+usbbc.sys=1
+coinst.dll=1
+Setup.exe=1
+
+[SourceDisksFiles.x86]
+usbbc.sys=1
+coinst.dll=1
+Setup.exe=1
+
+[CoInstaller_CopyFiles]
+coinst.dll
+
+[App_CopyFiles]
+Setup.exe
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Windows 98
+
+[Wdm1.Install]
+CopyFiles=Wdm1.Files.Driver, CoInstaller_CopyFiles, App_CopyFiles
+AddReg=Wdm1.AddReg
+
+[Wdm1.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,usbbc.sys
+
+HKLM, Software\Microsoft\Windows\CurrentVersion\RunOnce,%PCLinqSetup_Desc%,,"rundll32.exe coinst.dll,PCLINQ_CoInstaller"
+
+[Wdm1.Files.Driver]
+usbbc.sys
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Windows 2000
+
+[Wdm1.Install.NTx86]
+CopyFiles=Wdm1.Files.Driver.NTx86
+
+[Wdm1.Files.Driver.NTx86]
+usbbc.sys,,,%COPYFLG_NOSKIP%
+
+[Wdm1.Install.NTx86.Services]
+AddService = Wdm1, %SPSVCINST_ASSOCSERVICE%, Wdm1.Service
+
+[Wdm1.Service]
+DisplayName    = %Wdm1.ServiceName%
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_DEMAND_START%
+ErrorControl   = %SERVICE_ERROR_NORMAL%
+ServiceBinary  = %10%\System32\Drivers\usbbc.sys
+
+[Wdm1.Install.NTx86.CoInstallers]
+AddReg=CoInstaller_AddReg
+CopyFiles=CoInstaller_CopyFiles, App_CopyFiles
+
+[CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000,"coinst.dll,PCLINQ_CoInstaller"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Strings
+
+[Strings]
+Mfg="Prolific"
+Wdm1="USB Bridge Cable"
+Wdm1.ServiceName="USB Bridge Cable Driver"
+PCLinqSetup_Desc = "PC-Linq Application Setup"
+PCLINQ_DISKNAME="USB Bridge Cable Diskette"
+
+SPSVCINST_ASSOCSERVICE=0x00000002	; Driver service is associated with device being installed
+COPYFLG_NOSKIP=2	; Do not allow user to skip file
+SERVICE_KERNEL_DRIVER=1
+; SERVICE_AUTO_START=2
+SERVICE_DEMAND_START=3
+SERVICE_ERROR_NORMAL=1

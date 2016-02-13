@@ -1,0 +1,10 @@
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\ShoppingMarket.exe
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\ShoppingMarket.pdb
+D:\B.E projects 14-15\ShoppingMarket\bin\Release\ShoppingMarket.exe
+D:\B.E projects 14-15\ShoppingMarket\bin\Release\ShoppingMarket.pdb
+D:\B.E projects 14-15\ShoppingMarket\bin\Release\RibbonMenuButtonControl.dll
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\ResolveAssemblyReference.cache
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\ShoppingMarket.Form1.resources
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\ShoppingMarket.Properties.Resources.resources
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\GenerateResource-ResGen.read.1.tlog
+D:\B.E projects 14-15\ShoppingMarket\obj\Release\GenerateResource-ResGen.write.1.tlog

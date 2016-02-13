@@ -1,0 +1,379 @@
+;***********************************************************************
+; Copyright (C) Infineon Technologies AG. 2004-2007.
+;
+; INF for Windows 98, ME, 2000, XP and Vista
+
+[Version]
+Signature  = "$CHICAGO$"
+Compatible = 1
+Class      = Net
+ClassGUID  = {4d36e972-e325-11ce-bfc1-08002be10318}
+Provider   = %ADMtek%
+;LayoutFile = layout.inf
+CatalogFile = NET851X.cat
+CatalogFile.ntx86 = ADM851X.cat
+CatalogFile.ntamd64 = AD851X64.cat
+DriverVer   = 05/08/2007, 3.00.0508.2007
+
+[Manufacturer]
+%ADMtek%   = ADMtek,ntamd64
+
+[ControlFlags]
+;ExcludeFromSelect = USB\VID_07A6&PID_8515
+
+[ADMtek]
+%ADM851X.DeviceDesc% = ADM8515.Ndi,USB\VID_07A6&PID_8515
+%ADM851X.DeviceDesc% = ADM8511.Ndi,USB\VID_07A6&PID_8511
+%ADM851X.DeviceDesc% = ADM8511.Ndi,USB\VID_07A6&PID_0986
+%ADM851X.DeviceDesc% = ADM8513.Ndi,USB\VID_07A6&PID_8513
+
+[ADMtek.ntamd64]
+%ADM851X.DeviceDesc% = ADM8515.Ndi.ntamd64,USB\VID_07A6&PID_8515
+%ADM851X.DeviceDesc% = ADM8511.Ndi.ntamd64,USB\VID_07A6&PID_8511
+%ADM851X.DeviceDesc% = ADM8511.Ndi.ntamd64,USB\VID_07A6&PID_0986
+%ADM851X.DeviceDesc% = ADM8513.Ndi.ntamd64,USB\VID_07A6&PID_8513
+
+;***********************************************************************
+; Win98 main sections
+
+[ADM8511.Ndi]
+AddReg   = ADM8511.Reg, ADM851X.Params, ADM851X.Con.Reg
+;DeviceID = USB\VID_07A6&PID_8511
+CopyFiles = ADM851X.ndis.copyfiles
+
+[ADM8515.Ndi]
+AddReg   = ADM8515.Reg, ADM851X.Params, ADM851X.Con.Reg
+;DeviceID = USB\VID_07A6&PID_8515
+CopyFiles = ADM851X.ndis.copyfiles
+
+[ADM8513.Ndi]
+AddReg   = ADM8513.Reg, ADM851X.Params, ADM851X.Con.Reg
+CopyFiles = ADM851X.ndis.copyfiles
+
+;*******************************************************************************
+; NT main sections
+
+[ADM8511.Ndi.NT]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics    = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.NT
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8511.Ndi.NT.Services]
+AddService = ADM851X, 2, ADM851X.Service, Common.EventLog
+
+
+[ADM8511.Ndi.ntamd64]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics    = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.ntamd64
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8511.Ndi.ntamd64.Services]
+AddService = ADM851X, 2, ADM851X.Service.ntamd64, Common.EventLog
+
+
+[ADM8515.Ndi.NT]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics    = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.NT
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8515.Ndi.NT.Services]
+AddService = ADM851X, 2, ADM851X.Service, Common.EventLog
+
+
+[ADM8515.Ndi.ntamd64]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics    = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.ntamd64
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8515.Ndi.ntamd64.Services]
+AddService = ADM851X, 2, ADM851X.Service.ntamd64, Common.EventLog
+
+
+[ADM8513.Ndi.NT]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.NT
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8513.Ndi.NT.Services]
+AddService = ADM851X, 2, ADM851X.Service, Common.EventLog
+
+
+[ADM8513.Ndi.ntamd64]
+AddReg          = ADM851X.NT.Reg, ADM851X.Params, ADM851X.Con.Reg
+Characteristics = 0x84 ; NCF_HAS_UI | NCF_PHYSICAL
+BusType         = 15 ; PNPBus
+CopyFiles       = ADM851X.ndis.copyfiles.ntamd64
+*IfType         = 6		; IF_TYPE_ETHERNET_CSMACD 
+*MediaType      = 0		; NdisMedium802_3
+*PhysicalMediaType = 0		; NdisPhysicalMediumUnspecified 
+
+[ADM8513.Ndi.ntamd64.Services]
+AddService = ADM851X, 2, ADM851X.Service.ntamd64, Common.EventLog
+
+
+[ADM851X.ndis.copyfiles]
+ADM85W9X.SYS,,,2
+
+[ADM851X.ndis.copyfiles.NT]
+ADM851X.SYS,,,2
+
+[ADM851X.ndis.copyfiles.ntamd64]
+AD851X64.SYS,,,2
+
+;*******************************************************************************
+; Windows 98 section
+;*******************************************************************************
+
+[ADM8511.Reg]
+HKR,Ndi,DeviceID,,USB\VID_07A6&PID_8511
+HKR,,AdapterName,,ADM85W9X
+HKR,Ndi,CardType,,"PNP"
+
+HKR,,DevLoader,,*ndis,*ntkern,*ndis
+HKR,,DeviceVxDs,,ADM85W9X.SYS
+
+; NDIS Info
+HKR,NDIS,MajorNdisVersion,1,05
+HKR,NDIS,MinorNdisVersion,1,00
+HKR,NDIS,LogDriverName,,ADM85W9X
+
+; Interfaces
+HKR,Ndi\Interfaces,DefUpper,,"ndis3"
+HKR,Ndi\Interfaces,DefLower,,"ethernet"
+HKR,Ndi\Interfaces,UpperRange,,"ndis3"
+HKR,Ndi\Interfaces,LowerRange,,"ethernet"
+
+; Install sections
+HKR,Ndi\Install,,,"ADM851X.Install"
+
+HKR,Ndi,HelpText,,"Infineon ADM851X USB To Fast Ethernet MII Adapter"
+
+[ADM8515.Reg]
+HKR,Ndi,DeviceID,,USB\VID_07A6&PID_8515
+HKR,,AdapterName,,ADM85W9X
+HKR,Ndi,CardType,,"PNP"
+
+HKR,,DevLoader,,*ndis,*ntkern,*ndis
+HKR,,DeviceVxDs,,ADM85W9X.SYS
+
+; NDIS Info
+HKR,NDIS,MajorNdisVersion,1,05
+HKR,NDIS,MinorNdisVersion,1,00
+HKR,NDIS,LogDriverName,,ADM85W9X
+
+; Interfaces
+HKR,Ndi\Interfaces,DefUpper,,"ndis3"
+HKR,Ndi\Interfaces,DefLower,,"ethernet"
+HKR,Ndi\Interfaces,UpperRange,,"ndis3"
+HKR,Ndi\Interfaces,LowerRange,,"ethernet"
+
+; Install sections
+HKR,Ndi\Install,,,"ADM851X.Install"
+
+HKR,Ndi,HelpText,,"Infineon ADM851X USB To Fast Ethernet MII Adapter"
+
+
+;*******************************************************************************
+; Driver parameters
+;*******************************************************************************
+
+[ADM851X.Params]
+HKR, ,TxPacketDesc,	0, "1"	; default:0x28, set to 1 for pass WHQL NDISTest 6.5 powermgmt
+HKR, ,RxPacketDesc,	0, "20"	; 0x14
+HKR, ,*SpeedDuplex,	0, "0"	; Auto
+HKR, ,MediaSel,		0, "1"	; Ethernet mode	
+HKR, ,MagicPkt,	0, "1"	; Disable
+HKR, ,LinkWakeup,	0, "1"	; Disable
+HKR, ,AlivePara,	0, "0"
+;HKR, ,WOL,			0, "1"	; Disable
+
+[ADM851X.Con.Reg]
+HKR, Ndi\params\*SpeedDuplex,       ParamDesc,  0, "Speed & Duplex"
+HKR, Ndi\params\*SpeedDuplex,       default,    0, "0"
+HKR, Ndi\params\*SpeedDuplex,       type,       0, "enum"
+HKR, Ndi\params\*SpeedDuplex\enum,  "0",        0, "Auto Detect"
+HKR, Ndi\params\*SpeedDuplex\enum,  "1",        0, "10Mbps/Half Duplex"
+HKR, Ndi\params\*SpeedDuplex\enum,  "2",        0, "10Mbps/Full Duplex"
+HKR, Ndi\params\*SpeedDuplex\enum,  "3",        0, "100Mbps/Half Duplex"
+HKR, Ndi\params\*SpeedDuplex\enum,  "4",        0, "100Mbps/Full Duplex"
+
+HKR,Ndi\Params\MediaSel,ParamDesc,,"Select Media"
+HKR,Ndi\Params\MediaSel,default,,"1"
+HKR,Ndi\Params\MediaSel,type,,"enum"
+;HKR,Ndi\Params\MediaSel\enum,0,,"AutoSense"
+HKR,Ndi\Params\MediaSel\enum,1,,"Ethernet"
+;HKR,Ndi\Params\MediaSel\enum,2,,"Home Lan"
+HKR,Ndi\Params\MediaSel\enum,3,,"MAC MII"
+HKR,Ndi\Params\MediaSel,flag,1,"20","00","00","00"
+
+;HKR,Ndi\Params\MagicPkt,ParamDesc,,"Magic Packet"
+;HKR,Ndi\Params\MagicPkt,default,,"0"
+;HKR,Ndi\Params\MagicPkt,type,,"enum"
+;HKR,Ndi\Params\MagicPkt\enum,0,,"Enable"
+;HKR,Ndi\Params\MagicPkt\enum,1,,"Disable"
+;HKR,Ndi\Params\MagicPkt,flag,1,"20","00","00","00"
+
+;HKR,Ndi\Params\LinkWakeup,ParamDesc,,"Link Status Wakeup"
+;HKR,Ndi\Params\LinkWakeup,default,,"0"
+;HKR,Ndi\Params\LinkWakeup,type,,"enum"
+;HKR,Ndi\Params\LinkWakeup\enum,0,,"Enable"
+;HKR,Ndi\Params\LinkWakeup\enum,1,,"Disable"
+;HKR,Ndi\Params\LinkWakeup,flag,1,"20","00","00","00"
+
+
+HKR,Ndi\Params\FlowControl,ParamDesc,,"Flow Control"
+HKR,Ndi\Params\FlowControl,default,,"1"
+HKR,Ndi\Params\FlowControl,type,,"enum"
+HKR,Ndi\Params\FlowControl\enum,0,,"Enable"
+HKR,Ndi\Params\FlowControl\enum,1,,"Disable"
+HKR,Ndi\Params\FlowControl,flag,1,"20","00","00","00"
+
+HKR,Ndi\Params\FlowControl_Tx,ParamDesc,,"Flow Control Base Rx Packets"
+HKR,Ndi\Params\FlowControl_Tx,default,,"5"
+HKR,Ndi\Params\FlowControl_Tx,type,,"enum"
+HKR,Ndi\Params\FlowControl_Tx\enum,0,,"Disable"
+HKR,Ndi\Params\FlowControl_Tx\enum,1,," 1 Packet"
+HKR,Ndi\Params\FlowControl_Tx\enum,2,," 2 Packets"
+HKR,Ndi\Params\FlowControl_Tx\enum,3,," 4 Packets"
+HKR,Ndi\Params\FlowControl_Tx\enum,4,," 8 Packets"
+HKR,Ndi\Params\FlowControl_Tx\enum,5,,"16 Packets"
+HKR,Ndi\Params\FlowControl_Tx,flag,1,"20","00","00","00"
+
+HKR,Ndi\Params\FlowControl_Rx,ParamDesc,,"Flow Control Base Rx FIFO Size"
+HKR,Ndi\Params\FlowControl_Rx,default,,"5"
+HKR,Ndi\Params\FlowControl_Rx,type,,"enum"
+HKR,Ndi\Params\FlowControl_Rx\enum,0,,"Disable"
+HKR,Ndi\Params\FlowControl_Rx\enum,1,," 1K"
+HKR,Ndi\Params\FlowControl_Rx\enum,2,," 2K"
+HKR,Ndi\Params\FlowControl_Rx\enum,3,," 4K"
+HKR,Ndi\Params\FlowControl_Rx\enum,4,," 8K"
+HKR,Ndi\Params\FlowControl_Rx\enum,5,,"16K"
+HKR,Ndi\Params\FlowControl_Rx,flag,1,"20","00","00","00"
+
+
+;HKR,Ndi\Params\AlivePara,ParamDesc,,"Test Mode"
+;HKR,Ndi\Params\AlivePara,default,,"2"
+;HKR,Ndi\Params\AlivePara,type,,"enum"
+;HKR,Ndi\Params\AlivePara\enum,0,,"Mode 0"
+;HKR,Ndi\Params\AlivePara\enum,1,,"Mode 1"
+;HKR,Ndi\Params\AlivePara\enum,2,,"Mode 2"
+;HKR,Ndi\Params\AlivePara\enum,3,,"Mode 3"
+;HKR,Ndi\Params\AlivePara\enum,4,,"Mode 4"
+;HKR,Ndi\Params\AlivePara,flag,1,"20","00","00","00"
+
+HKR,Ndi\Params\RxPkt,ParamDesc,,"Burst Rx Packet"
+HKR,Ndi\Params\RxPkt,default,,"2"
+HKR,Ndi\Params\RxPkt,type,,"enum"
+HKR,Ndi\Params\RxPkt\enum,0,,"1 Pkt"
+HKR,Ndi\Params\RxPkt\enum,1,,"2 Pkts"
+HKR,Ndi\Params\RxPkt\enum,2,,"3 Pkts"
+HKR,Ndi\Params\RxPkt,flag,1,"20","00","00","00"
+
+;HKR,Ndi\Params\WOL,ParamDesc,,"WOL Supported"
+;HKR,Ndi\Params\WOL,default,,"0"
+;HKR,Ndi\Params\WOL,type,,"enum"
+;HKR,Ndi\Params\WOL\enum,0,,"Enable"
+;HKR,Ndi\Params\WOL\enum,1,,"Disable"
+;HKR,Ndi\Params\WOL,flag,1,"20","00","00","00"
+
+
+;*******************************************************************************
+; Install section for Windows 2000
+;*******************************************************************************
+
+[ADM851X.NT.Reg]
+; Interfaces
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi,            Service,    0, "ADM851X"
+HKR,,                Platform,   0, "1"
+
+
+[ADM851X.Service]
+DisplayName    = %ADM851X.Service.DispName%
+ServiceType    = 1 ;%SERVICE_KERNEL_DRIVER%
+StartType      = 3 ;%SERVICE_DEMAND_START%
+ErrorControl   = 1 ;%SERVICE_ERROR_NORMAL%
+ServiceBinary  = %12%\ADM851X.SYS
+LoadOrderGroup = NDIS
+AddReg         = TextModeFlags.Reg
+
+
+[ADM851X.Service.ntamd64]
+DisplayName    = %ADM851X.Service.DispName%
+ServiceType    = 1 ;%SERVICE_KERNEL_DRIVER%
+StartType      = 3 ;%SERVICE_DEMAND_START%
+ErrorControl   = 1 ;%SERVICE_ERROR_NORMAL%
+ServiceBinary  = %12%\AD851X64.SYS
+LoadOrderGroup = NDIS
+AddReg         = TextModeFlags.Reg
+
+[Common.EventLog]
+AddReg = Common.AddEventLog.Reg
+
+[Common.AddEventLog.Reg]
+HKR, , EventMessageFile, 0x00020000, "%%SystemRoot%%\System32\netevent.dll"
+HKR, , TypesSupported  , 0x00010001, 7
+
+[TextModeFlags.Reg]
+HKR, , TextModeFlags, 0x00010001, 0x0001
+
+
+;*******************************************************************************
+; Destination directories
+;*******************************************************************************
+
+[DestinationDirs]
+ADM851X.ndis.copyfiles    = 11 ; LDID_SYSTEM
+ADM851X.ndis.copyfiles.NT = 12 ; LDID_SYSTEM32\DRIVERS
+ADM851X.ndis.copyfiles.ntamd64 = 12 ; LDID_SYSTEM32\DRIVERS
+DefaultDestDir           = 11  ; LDID_SYSTEM
+
+
+[SourceDisksNames]
+; Cabinet file names and associated disks
+; <cab#> = <disk#>,<cabinet filename>, ID (Unused, must be 0)
+1=%DISKNAME%,,,
+
+[SourceDisksFiles]
+;<file> = <cabinet number>,<subdir>,<filename>,<size>
+;Note: File is not in a cabinet if cab# is 0
+ADM851X.SYS = 1
+ADM85W9X.SYS = 1
+AD851X64.SYS = 1
+;NET851X.INF = 1
+;NET851X.CAT = 1
+
+
+;*******************************************************************************
+; Localizable strings
+;*******************************************************************************
+
+[Strings]
+ADMtek = "Infineon Technologies AG"
+
+;Source Disk Name
+DISKNAME = "Infineon ADM851X USB To Fast Ethernet MII Adapter Driver Disk"
+
+ADM851X.DeviceDesc       = "Infineon ADM851X USB To Fast Ethernet MII Adapter"
+ADM851X.Service.DispName = "Infineon ADM851X USB To Fast Ethernet MII Adapter Driver"
